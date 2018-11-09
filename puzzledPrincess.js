@@ -6,10 +6,11 @@ class Marker extends Sprite {
         super();
         this.board = board;
         this.name = name;
-        this.setImage = image;
+        this.setImage(image);
         this.x = 150;
         this.y = 275;
-
+        this.x = this.startX = 150;
+        this.y = this.startY = 275;
     }
 }
 
@@ -25,7 +26,12 @@ class PrincessMarker extends Marker {
     }
     handleMouseLeftButtonUp() {
         this.dragging = false;
-    }
+        this.row;
+        this.row = Math.floor(0, 3);
+        window.alert("The row number is " + row);
+    
+        
+        }
     handleGameLoop() {
         if (this.dragging) {
             this.x = game.getMouseX() - this.width / 2;
@@ -35,7 +41,6 @@ class PrincessMarker extends Marker {
         }
     }
 }
-
 class StrangerMarker extends Marker {}
 
 class TicTacToe extends Sprite {
@@ -43,7 +48,7 @@ class TicTacToe extends Sprite {
         super();
 
         this.name = "TicTacToe";
-        this.setImage = ("board.png");
+        this.setImage("board.png");
         this.x = 300;
         this.y = 85;
         this.SquareSize = 150;
