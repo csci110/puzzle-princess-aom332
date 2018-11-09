@@ -9,15 +9,33 @@ class Marker extends Sprite {
         this.setImage = image;
         this.x = 150;
         this.y = 275;
-        
+
     }
 }
+
 class PrincessMarker extends Marker {
     constructor(board) {
-        super(board, "annFace.png", "Princess ANn");
+        super(board, "annFace.png", "Princess Ann");
+        this.dragging = false;
+
+    }
+
+    handleMouseLeftButtonDown() {
+        this.dragging = true;
+    }
+    handleMouseLeftButtonUp() {
         this.dragging = false;
     }
+    handleGameLoop() {
+        if (this.dragging) {
+            this.x = game.getMouseX() - this.width / 2;
+        }
+        if (this.dragging) {
+            this.y = game.getMouseY() - this.height / 2;
+        }
+    }
 }
+
 class StrangerMarker extends Marker {}
 
 class TicTacToe extends Sprite {
@@ -31,10 +49,10 @@ class TicTacToe extends Sprite {
         this.SquareSize = 150;
         this.size = 3;
         this.activeMarker; // variable exists, but value is undefined
-        
+
     }
     takeTurns() {
-        this.activeMarker = this.PrincessMarker(this);
+        this.activeMarker = new PrincessMarker(this);
     }
 }
 let theBoard = new TicTacToe();
