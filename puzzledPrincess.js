@@ -45,9 +45,9 @@ class PrincessMarker extends Marker {
             return;
         }
         this.playInSquare(row, col);
-        
-        
+        this.board = theBoard.takeTurns();
     }
+    
     handleGameLoop() {
         if (this.dragging) {
             this.x = game.getMouseX() - this.width / 2;
