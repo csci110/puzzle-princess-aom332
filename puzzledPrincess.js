@@ -12,6 +12,11 @@ class Marker extends Sprite {
         this.x = this.startX = 150;
         this.y = this.startY = 275;
     }
+    playInSquare(row, col) {
+        this.x = this.board.x + col * 150 + 50;
+        this.y = this.board.y + row * 150 + 50;
+ 
+    }
 }
 
 class PrincessMarker extends Marker {
@@ -26,12 +31,23 @@ class PrincessMarker extends Marker {
     }
     handleMouseLeftButtonUp() {
         this.dragging = false;
-        this.row;
-        this.row = Math.floor(0, 3);
-        window.alert("The row number is " + row);
-    
-        
+
+        let col = Math.floor((this.x - this.board.x) / 150);
+        // window.alert(col);
+        if (col < 0 || col > 2) {
+            this.startY;
+            return;
         }
+        let row = Math.floor((this.y - this.board.y) / 150);
+        // window.alert(row)
+        if (row < 0 || row > 2) {
+            this.x = this.startX;
+            return;
+        }
+        this.playInSquare(row, col);
+        
+        
+    }
     handleGameLoop() {
         if (this.dragging) {
             this.x = game.getMouseX() - this.width / 2;
