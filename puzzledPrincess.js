@@ -11,11 +11,13 @@ class Marker extends Sprite {
         this.y = 275;
         this.x = this.startX = 150;
         this.y = this.startY = 275;
+        this.squareSymbol = this.name.substring(0, 1);
+
     }
     playInSquare(row, col) {
         this.x = this.board.x + col * 150 + 50;
         this.y = this.board.y + row * 150 + 50;
- 
+
     }
 }
 
@@ -47,7 +49,7 @@ class PrincessMarker extends Marker {
         this.playInSquare(row, col);
         this.board = theBoard.takeTurns();
     }
-    
+
     handleGameLoop() {
         if (this.dragging) {
             this.x = game.getMouseX() - this.width / 2;
@@ -70,8 +72,27 @@ class TicTacToe extends Sprite {
         this.SquareSize = 150;
         this.size = 3;
         this.activeMarker; // variable exists, but value is undefined
+        this.emptySquareSymbol = '-';
 
+        this.dataModel = [];
+        for (let row = 0; row < this.size; row = row + 1) {
+            this.dataModel[row] = [];
+            for (let col = 0; col < this.size; col = col + 1) {
+                this.dataModel[row][col] = this.emptySquareSymbol;
+            }
+        }
     }
+    debugBoard() {
+        let boardString = '\n';
+        for (let row = 0; row < this.size; row = row + 1) {
+            for (let col = 0; col < this.size; col = col + 1) {
+                boardString = boardString + this.dataModel[row][col] + ' ';
+            }
+            boardString = boardString + '\n';
+        }
+        console.log('The current state of the board is ' + boardString);
+    }
+    
     takeTurns() {
         this.activeMarker = new PrincessMarker(this);
     }
