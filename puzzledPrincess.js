@@ -125,8 +125,61 @@ class TicTacToe extends Sprite {
         }
         console.log('The data model after ' + moveCount + ' move(s):' + boardString);
     }
-
+    gameIsWon() {
+        // Are there three of the same markers diagonally from upper left?
+        if (this.board[0][0] === this.board[1][1] &&
+            this.board[1][1] === this.board[2][2] &&
+            this.board[2][2] !== this.emptySquareSymbol) {
+            return true;
+        }
+        // Are there three of the same markers diagonally from upper left?
+        if (this.board[0][2] === this.board[1][1] &&
+            this.board[1][1] === this.board[2][0] &&
+            this.board[2][0] !== this.emptySquareSymbol) {
+            return true;
+        }
+        for (let row = 0; row < this.size; row++) {
+            if (this.dataModel[row][0] === this.dataModel[row][1] &&
+                this.dataModel[row][1] === this.dataModel[row][2] &&
+                this.dataModel[row][2] !== this.emptySquareSymbol) {
+                return true;
+            }
+        }
+        for (let col = 0; col < this.size; col++) {
+            if (this.dataModel[col][0] === this.dataModel[col][1] &&
+                this.dataModel[col][1] === this.dataModel[col][2] &&
+                this.dataModel[col][2] !== this.emptySquareSymbol) {
+                return true;
+            }
+        }
+        return false;
+    }
+    gameIsDrawn() {
+        for (let row = 0; row < this.size; row++) {
+            for (let col = 0; col < this.size; col++) {
+                if (this.dataModel[row][col] === this.emptySquareSymbol) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     takeTurns() {
+        if (this.gameIsWon()) {
+            let message = '        Game Over.\n        ';
+            if (this.activeMarker instanceof PrincessMarker) {
+                message = message + 'The Princess wins.';
+            }
+            else if (this.activeMarker instanceof StrangerMarker) {
+                message = message + 'The Stranger wins.';
+            }
+            game.end(message);
+            return;
+        }
+        if (this.gameIsDrawn()) {
+            game.end('        Game Over.\n        The game ends in a draw.');
+            return;
+        }
         //   this.activeMarker = new PrincessMarker(this);
         if (!this.activeMarker) {
 
