@@ -12,11 +12,17 @@ class Marker extends Sprite {
         this.x = this.startX = 150;
         this.y = this.startY = 275;
         this.squareSymbol = this.name.substring(0, 1);
+        this.inBoard = false;
 
     }
+
     playInSquare(row, col) {
         this.x = this.board.x + col * 150 + 50;
         this.y = this.board.y + row * 150 + 50;
+        this.board.dataModel[row][col] = this.squareSymbol;
+        this.board.debugBoard();
+        this.inBoard = true;
+
 
     }
 }
@@ -84,15 +90,19 @@ class TicTacToe extends Sprite {
     }
     debugBoard() {
         let boardString = '\n';
+        let moveCount = 0;
         for (let row = 0; row < this.size; row = row + 1) {
             for (let col = 0; col < this.size; col = col + 1) {
                 boardString = boardString + this.dataModel[row][col] + ' ';
+                if (this.dataModel[row][col] != this.emptySquareSymbol) {
+                    moveCount++;
+                }
             }
             boardString = boardString + '\n';
         }
-        console.log('The current state of the board is ' + boardString);
+        console.log('The data model after ' + moveCount + ' move(s):' + boardString);
     }
-    
+
     takeTurns() {
         this.activeMarker = new PrincessMarker(this);
     }
