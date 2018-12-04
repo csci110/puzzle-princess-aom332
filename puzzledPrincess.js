@@ -111,20 +111,6 @@ class TicTacToe extends Sprite {
             }
         }
     }
-    debugBoard() {
-        let boardString = '\n';
-        let moveCount = 0;
-        for (let row = 0; row < this.size; row = row + 1) {
-            for (let col = 0; col < this.size; col = col + 1) {
-                boardString = boardString + this.dataModel[row][col] + ' ';
-                if (this.dataModel[row][col] != this.emptySquareSymbol) {
-                    moveCount++;
-                }
-            }
-            boardString = boardString + '\n';
-        }
-        console.log('The data model after ' + moveCount + ' move(s):' + boardString);
-    }
     gameIsWon() {
         // Are there three of the same markers diagonally from upper left?
         if (this.board[0][0] === this.board[1][1] &&
@@ -154,6 +140,7 @@ class TicTacToe extends Sprite {
         }
         return false;
     }
+    
     gameIsDrawn() {
         for (let row = 0; row < this.size; row++) {
             for (let col = 0; col < this.size; col++) {
@@ -163,6 +150,20 @@ class TicTacToe extends Sprite {
             }
         }
         return true;
+    }
+    debugBoard() {
+        let boardString = '\n';
+        let moveCount = 0;
+        for (let row = 0; row < this.size; row = row + 1) {
+            for (let col = 0; col < this.size; col = col + 1) {
+                boardString = boardString + this.dataModel[row][col] + ' ';
+                if (this.dataModel[row][col] != this.emptySquareSymbol) {
+                    moveCount++;
+                }
+            }
+            boardString = boardString + '\n';
+        }
+        console.log('The data model after ' + moveCount + ' move(s):' + boardString);
     }
     takeTurns() {
         if (this.gameIsWon()) {
