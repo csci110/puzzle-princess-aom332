@@ -49,7 +49,7 @@ class PrincessMarker extends Marker {
         let col = Math.floor((this.x - this.board.x) / 150);
         // window.alert(col);
         if (col < 0 || col > 2 || row < 0 || row > 2 ||
-            this.board.dataModel[row][col] !== this.board.emptySquareSymbol) {
+            this.board.getSquareSymbol(row, col) !== this.board.emptySquareSymbol) {
             this.x = this.startX;
             this.y = this.startY;
             return;
@@ -77,16 +77,169 @@ class StrangerMarker extends Marker {
         if (this.inBoard) {
             return;
         }
-        // Mark a random empty square.
-        let row, col;
-        do {
-            row = Math.round(Math.random() * (this.board.size - 1));
-            col = Math.round(Math.random() * (this.board.size - 1));
+        let foundMove = this.findWinningMove();
+
+        if (!foundMove) {
+            foundMove = this.findWinningMove(true);
         }
-        while (this.board.dataModel[row][col] !== this.board.emptySquareSymbol);
-        this.board.dataModel[row][col] = this.squareSymbol;
-        this.playInSquare(row, col);
+
+        if (!foundMove) {
+            foundMove = this.findForkingMove();
+        }
+
+        if (!foundMove) {
+            foundMove = this.findForkingMove(true);
+        }
+
+        if (!foundMove) {
+            foundMove = this.findCenterMove();
+        }
+
+        if (!foundMove) {
+            foundMove = this.findOppositeCornerMove();
+        }
+
+        if (!foundMove) {
+            foundMove = this.findAnyCornerMove();
+        }
+
+        if (!foundMove) {
+            foundMove = this.findAnySideMove();
+        }
+
+        if (!foundMove) {
+            // Mark a random empty square.
+            let row, col;
+            do {
+                row = Math.round(Math.random() * (this.board.size - 1));
+                col = Math.round(Math.random() * (this.board.size - 1));
+            }
+            while (this.board.dataModel[row][col] !== this.board.emptySquareSymbol);
+            this.board.dataModel[row][col] = this.squareSymbol;
+            this.playInSquare(row, col);
+            foundMove = true;
+        }
+
+        if (!foundMove) throw new Error('Failed to find a move.');
         this.board.takeTurns();
+        // Mark a random empty square.
+    }
+    findWinningMove(forOpponent) {
+        for (let row = 0; row < this.board.size; row++) {
+            for (let col = 0; col < this.board.size; col++) {
+                if (this.board.markSquare(row, col, forOpponent)) {
+                    if (this.board.gameIsWon()) {
+                        this.playInSquare(row, col);
+                        return true;
+                    }
+                    else this.board.unmarkSquare(row, col);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    findForkingMove(forOpponent) {
+        return false;
+    }
+
+    findCenterMove() {
+        let center = Math.floor(this.board.size / 2);
+        if (this.board.markSquare(center, center)) {
+            this.playInSquare(center, center);
+            return true;
+        }
+        return false;
+    }
+    findOppositeCornerMove() {
+        let last = this.board.size - 1;
+        let topRight = this.board.getSquareSymbol(0, last);
+        let topLeft = this.board.getSquareSymbol(0, 0);
+        let bottomRight = this.board.getSquareSymbol(last, last);
+        let bottomLeft = this.board.getSquareSymbol(last, 0);
+
+        if (topLeft !== this.squareSymbol &&
+            topLeft !== this.board.emptySquareSymbol &&
+            this.board.markSquare(last, last)) {
+            this.playInSquare(last, last);
+            return true;
+        }
+
+        if (topRight !== this.squareSymbol &&
+            topRight !== this.board.emptySquareSymbol &&
+            this.board.markSquare(last, 0)) {
+            this.playInSquare(last, 0);
+            return true;
+        }
+
+        if (bottomLeft !== this.squareSymbol &&
+            bottomLeft !== this.board.emptySquareSymbol &&
+            this.board.markSquare(0, last)) {
+            this.playInSquare(0, last);
+            return true;
+        }
+        if (bottomRight !== this.squareSymbol &&
+            bottomRight !== this.board.emptySquareSymbol &&
+            this.playInSquare(0, 0)) {
+            this.playInSquare(0, 0);
+            return true;
+        }
+        return false;
+    }
+    findAnyCornerMove() {
+        let last = this.board.size - 1;
+        if (this.board.markSquare(0, last)) {
+            this.playInSquare(0, last);
+            return true;
+        }
+        if (this.board.markSquare(last, 0)) {
+            this.playInSquare(last, 0);
+            return true;
+        }
+        if (this.board.markSquare(0, 0)) {
+            this.playInSquare(0, 0);
+            return true;
+        }
+        if (this.board.markSquare(last, last)) {
+            this.playInSquare(last, last);
+            return true;
+        }
+        return false;
+    }
+
+    findAnySideMove() {
+        let last = this.board.size - 1;
+        // check all interior columns of first row.
+        for (let col = 1; col < last; col = col + 1) {
+            if (this.board.markSquare(0, col)) {
+                this.playInSquare(0, col);
+                return true;
+            }
+
+        }
+        for (let col = 1; col < last; col = col + 1) {
+            if (this.board.markSquare(last, col)) {
+                this.playInSquare(last, col);
+                return true;
+            }
+
+            for (let row = 1; row < last; row = row + 1) {
+                if (this.board.markSquare(row, 0)) {
+                    this.playInSquare(row, 0);
+                    return true;
+                }
+
+                for (let row = 1; row < last; row = row + 1) {
+                    if (this.board.markSquare(row, last)) {
+                        this.playInSquare(row, last);
+                        return true;
+                    }
+
+                }
+            }
+        }
+        return false;
     }
 }
 
@@ -111,17 +264,36 @@ class TicTacToe extends Sprite {
             }
         }
     }
+
+    getSquareSymbol(row, col) {
+        return this.dataModel[row][col];
+    }
+
+    markSquare(row, col, forOpponent) {
+        let squareSymbol = this.activeMarker.squareSymbol;
+        if (forOpponent) {
+            squareSymbol = this.squareSymbolForHumanPlayer;
+            if (this.getSquareSymbol(row, col) === this.emptySquareSymbol) {
+                this.dataModel[row][col] = squareSymbol;
+                return true;
+            }
+            return false;
+        }
+    }
+    unmarkSquare(row, col) {
+        this.dataModel[row][col] = this.emptySquareSymbol;
+    }
     gameIsWon() {
         // Are there three of the same markers diagonally from upper left?
-        if (this.board[0][0] === this.board[1][1] &&
-            this.board[1][1] === this.board[2][2] &&
-            this.board[2][2] !== this.emptySquareSymbol) {
+        if (this.dataModel[0][0] === this.dataModel[1][1] &&
+            this.dataModel[1][1] === this.dataModel[2][2] &&
+            this.dataModel[2][2] !== this.emptySquareSymbol) {
             return true;
         }
         // Are there three of the same markers diagonally from upper left?
-        if (this.board[0][2] === this.board[1][1] &&
-            this.board[1][1] === this.board[2][0] &&
-            this.board[2][0] !== this.emptySquareSymbol) {
+        if (this.dataModel[0][2] === this.dataModel[1][1] &&
+            this.dataModel[1][1] === this.dataModel[2][0] &&
+            this.dataModel[2][0] !== this.emptySquareSymbol) {
             return true;
         }
         for (let row = 0; row < this.size; row++) {
@@ -132,15 +304,15 @@ class TicTacToe extends Sprite {
             }
         }
         for (let col = 0; col < this.size; col++) {
-            if (this.dataModel[col][0] === this.dataModel[col][1] &&
-                this.dataModel[col][1] === this.dataModel[col][2] &&
-                this.dataModel[col][2] !== this.emptySquareSymbol) {
+            if (this.dataModel[0][col] === this.dataModel[1][col] &&
+                this.dataModel[1][col] === this.dataModel[2][col] &&
+                this.dataModel[2][col] !== this.emptySquareSymbol) {
                 return true;
             }
         }
         return false;
     }
-    
+
     gameIsDrawn() {
         for (let row = 0; row < this.size; row++) {
             for (let col = 0; col < this.size; col++) {
@@ -200,6 +372,7 @@ class TicTacToe extends Sprite {
             this.activeMarker = new PrincessMarker(this);
         }
     }
+
 }
 let theBoard = new TicTacToe();
 theBoard.takeTurns();
