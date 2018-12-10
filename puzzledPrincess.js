@@ -283,6 +283,79 @@ class TicTacToe extends Sprite {
     unmarkSquare(row, col) {
         this.dataModel[row][col] = this.emptySquareSymbol;
     }
+    
+    countWinningMoves(forOpponent) {
+    let squareSymbol = this.activeMarker.squareSymbol;
+    if (forOpponent) {
+        squareSymbol = this.squareSymbolForHumanPlayer;
+    }
+
+    let winningMoves = 0;
+
+    // check rows
+    for (let row = 0; row < this.size; row = row + 1) {
+        let emptyCount = 0;
+        let markerCount = 0;
+
+        for (let col = 0; col < this.size; col = col + 1) {
+            // ADD CODE HERE THAT COUNTS EMPTY SQUARES AND MARKER SQUARES IN THE ROW
+        }
+
+        if (emptyCount === 1 && markerCount === 2) {
+            winningMoves = winningMoves + 1;
+        }
+    }
+
+    // check columns
+    
+    for (let col = 0; col < this.size; col++) {
+        let emptyCount = 0;
+        let markerCount = 0;
+        
+        for (let row = 0; row < this.size; row++) {
+            if (this.dataModel[row, col] === this.emptySquareSymbol) {
+                emptyCount++;
+            }
+            if(this.dataModel[row, col] === squareSymbol) {
+                markerCount++;
+            }
+        }
+        
+        if(emptyCount === 1 && markerCount === 2) {
+            winningMoves = winningMoves + 1;
+        }
+    }
+    // check first diagonal
+    let emptyCount = 0;
+    let markerCount = 0;
+    
+    if (this.getSquareSymbol(0, 0) === this.emptySquareSymbol) {
+        emptyCount = emptyCount + 1;
+    }
+    else if(this.getSquareSymbol(0, 0) === squareSymbol) {
+        markerCount = markerCount + 1;
+    }
+    
+    if (this.getSquareSymbol(1, 1) === this.emptySquareSymbol) {
+        emptyCount = emptyCount + 1;
+    }
+    else if (this.getSquareSymbol(1, 1) === squareSymbol) {
+        markerCount = markerCount + 1;
+    }
+    
+    if (this.getSquareSymbol(2, 2) === this.emptySquareSymbol) {
+        emptyCount = emptyCount + 1;
+    }
+    else if(this.emptySquareSymbol(2, 2) === squareSymbol) {
+        markerCount = markerCount + 1;
+    }
+    if (emptyCount === 1 && markerCount === 2) {
+        winningMoves = winningMoves + 1;
+    }
+    // check second diagonal
+
+    return winningMoves;
+}
     gameIsWon() {
         // Are there three of the same markers diagonally from upper left?
         if (this.dataModel[0][0] === this.dataModel[1][1] &&
