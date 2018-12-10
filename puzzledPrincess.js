@@ -80,11 +80,11 @@ class StrangerMarker extends Marker {
             // Mark the square tentatively ...
                 if (this.board.markSquare(row, col)) {
             // if it creates threat to win ...
-                 if (true) {
-                        // ... figure out how princess would block it
-                 for (let princessRow = 0; princessRow < this.board.boardSize;
+                if (true) {
+            // ... figure out how princess would block it
+               for (let princessRow = 0; princessRow < this.board.boardSize;
                         princessRow++) {
-                   for (let princessCol = 0; princessCol < this.board.boardSize;
+                  for (let princessCol = 0; princessCol < this.board.boardSize;
                         princessCol = princessCol + 1) {
             // Mark the square tentatively for opponent ...
                 if (this.board.markSquare(princessRow, princessCol, true)) {
@@ -348,7 +348,7 @@ class TicTacToe extends Sprite {
             let markerCount = 0;
 
             for (let col = 0; col < this.size; col = col + 1) {
-                // ADD CODE HERE THAT COUNTS EMPTY SQUARES AND MARKER SQUARES IN THE ROW
+ // ADD CODE HERE THAT COUNTS EMPTY SQUARES AND MARKER SQUARES IN THE ROW
             }
 
             if (emptyCount === 1 && markerCount === 2) {
