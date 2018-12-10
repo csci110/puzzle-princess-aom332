@@ -49,7 +49,8 @@ class PrincessMarker extends Marker {
         let col = Math.floor((this.x - this.board.x) / 150);
         // window.alert(col);
         if (col < 0 || col > 2 || row < 0 || row > 2 ||
-            this.board.getSquareSymbol(row, col) !== this.board.emptySquareSymbol) {
+            this.board.getSquareSymbol(row, col)
+                    !== this.board.emptySquareSymbol) {
             this.x = this.startX;
             this.y = this.startY;
             return;
@@ -72,6 +73,42 @@ class StrangerMarker extends Marker {
     constructor(board) {
         super(board, 'strangerFace.png', 'Stranger');
 
+    }
+    forceOpponentToBlock() {
+        for (let row = 0; row < this.board.boardSize; row = row + 1) {
+            for (let col = 0; col < this.board.boardSize; col = col + 1) {
+            // Mark the square tentatively ...
+                if (this.board.markSquare(row, col)) {
+            // if it creates threat to win ...
+                 if (true) {
+                        // ... figure out how princess would block it
+                 for (let princessRow = 0; princessRow < this.board.boardSize;
+                        princessRow++) {
+                   for (let princessCol = 0; princessCol < this.board.boardSize;
+                        princessCol = princessCol + 1) {
+            // Mark the square tentatively for opponent ...
+                if (this.board.markSquare(princessRow, princessCol, true)) {
+            // if this is the block, and it creates no fork ...
+                    if (this.board.findWinningMove == false &&
+                        this.board.countWinningMoves(true) > 2) {
+            // ... unmark the princess block and play here.
+                         this.board.unmarkSquare(princessRow, princessCol);
+                            this.playInSquare(row, col);
+                                        return true;
+                               }
+            // unmark tentative princess square
+                            this.board.unmarkSquare(princessRow, princessCol);
+                                }
+                            }
+                        }
+                    }
+                    // unmark tentative stranger move
+                    this.board.unmarkSquare(row, col);
+                }
+            }
+        }
+        // no move found
+        return false;
     }
     handleGameLoop() {
         if (this.inBoard) {
@@ -114,7 +151,8 @@ class StrangerMarker extends Marker {
                 row = Math.round(Math.random() * (this.board.size - 1));
                 col = Math.round(Math.random() * (this.board.size - 1));
             }
-            while (this.board.dataModel[row][col] !== this.board.emptySquareSymbol);
+            while (this.board.dataModel[row][col] 
+                    !== this.board.emptySquareSymbol);
             this.board.dataModel[row][col] = this.squareSymbol;
             this.playInSquare(row, col);
             foundMove = true;
@@ -252,40 +290,7 @@ class StrangerMarker extends Marker {
         }
         return false;
     }
-    forceOpponentToBlock() {
-        for (let row = 0; row < this.game.boardSize; row = row + 1) {
-            for (let col = 0; col < this.game.boardSize; col = col + 1) {
-                // Mark the square tentatively ...
-                if (this.game.markSquare(row, col)) {
-                    // if it creates threat to win ...
-                    if (true) {
-                        // ... figure out how princess would block it
-                        for (let princessRow = 0; princessRow < this.game.boardSize; princessRow++) {
-                            for (let princessCol = 0; princessCol < this.game.boardSize; princessCol = princessCol + 1) {
-                                // Mark the square tentatively for opponent ...
-                                if (this.game.markSquare(princessRow, princessCol, true)) {
-                                    // if this is the block, and it creates no fork ...
-                                    if (this.board.findWinningMove == false &&
-                                        this.board.countWinningMoves(true) > 2) {
-                                        // ... unmark the princess block and play here.
-                                        this.board.unmarkSquare(princessRow, princessCol);
-                                        this.playInSquare(row, col);
-                                        return true;
-                                    }
-                                    // unmark tentative princess square
-                                    this.game.unmarkSquare(princessRow, princessCol);
-                                }
-                            }
-                        }
-                    }
-                    // unmark tentative stranger move
-                    this.game.unmarkSquare(row, col);
-                }
-            }
-        }
-        // no move found
-        return false;
-    }
+
 }
 
 class TicTacToe extends Sprite {
@@ -481,7 +486,7 @@ class TicTacToe extends Sprite {
             }
             boardString = boardString + '\n';
         }
-        console.log('The data model after ' + moveCount + ' move(s):' + boardString);
+console.log('The data model after ' + moveCount + ' move(s):' + boardString);
     }
     takeTurns() {
         if (this.gameIsWon()) {
