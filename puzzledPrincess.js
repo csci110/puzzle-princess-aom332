@@ -141,6 +141,17 @@ class StrangerMarker extends Marker {
     }
 
     findForkingMove(forOpponent) {
+        for (let row = 0; row < this.board.size; row++) {
+            for (let col = 0; col < this.board.size; col++) {
+                if (this.board.markSquare(row, col, forOpponent)) {
+                    if (this.board.countWinningMoves(forOpponent) > 1) {
+                        this.playInSquare(row, col);
+                        return true;
+                    }
+                    else this.board.unmarkSquare(row, col);
+                }
+            }
+        }
         return false;
     }
 
@@ -241,6 +252,40 @@ class StrangerMarker extends Marker {
         }
         return false;
     }
+    forceOpponentToBlock() {
+        for (let row = 0; row < this.game.boardSize; row = row + 1) {
+            for (let col = 0; col < this.game.boardSize; col = col + 1) {
+                // Mark the square tentatively ...
+                if (this.game.markSquare(row, col)) {
+                    // if it creates threat to win ...
+                    if (true) {
+                        // ... figure out how princess would block it
+                        for (let princessRow = 0; princessRow < this.game.boardSize; princessRow++) {
+                            for (let princessCol = 0; princessCol < this.game.boardSize; princessCol = princessCol + 1) {
+                                // Mark the square tentatively for opponent ...
+                                if (this.game.markSquare(princessRow, princessCol, true)) {
+                                    // if this is the block, and it creates no fork ...
+                                    if (this.board.findWinningMove == false &&
+                                        this.board.countWinningMoves(true) > 2) {
+                                        // ... unmark the princess block and play here.
+                                        this.board.unmarkSquare(princessRow, princessCol);
+                                        this.playInSquare(row, col);
+                                        return true;
+                                    }
+                                    // unmark tentative princess square
+                                    this.game.unmarkSquare(princessRow, princessCol);
+                                }
+                            }
+                        }
+                    }
+                    // unmark tentative stranger move
+                    this.game.unmarkSquare(row, col);
+                }
+            }
+        }
+        // no move found
+        return false;
+    }
 }
 
 class TicTacToe extends Sprite {
@@ -283,79 +328,107 @@ class TicTacToe extends Sprite {
     unmarkSquare(row, col) {
         this.dataModel[row][col] = this.emptySquareSymbol;
     }
-    
+
     countWinningMoves(forOpponent) {
-    let squareSymbol = this.activeMarker.squareSymbol;
-    if (forOpponent) {
-        squareSymbol = this.squareSymbolForHumanPlayer;
-    }
+        let squareSymbol = this.activeMarker.squareSymbol;
+        if (forOpponent) {
+            squareSymbol = this.squareSymbolForHumanPlayer;
+        }
 
-    let winningMoves = 0;
+        let winningMoves = 0;
 
-    // check rows
-    for (let row = 0; row < this.size; row = row + 1) {
+        // check rows
+        for (let row = 0; row < this.size; row = row + 1) {
+            let emptyCount = 0;
+            let markerCount = 0;
+
+            for (let col = 0; col < this.size; col = col + 1) {
+                // ADD CODE HERE THAT COUNTS EMPTY SQUARES AND MARKER SQUARES IN THE ROW
+            }
+
+            if (emptyCount === 1 && markerCount === 2) {
+                winningMoves = winningMoves + 1;
+            }
+        }
+
+        // check columns
+
+        for (let col = 0; col < this.size; col++) {
+            let emptyCount = 0;
+            let markerCount = 0;
+
+            for (let row = 0; row < this.size; row++) {
+                if (this.dataModel[row, col] === this.emptySquareSymbol) {
+                    emptyCount++;
+                }
+                if (this.dataModel[row, col] === squareSymbol) {
+                    markerCount++;
+                }
+            }
+
+            if (emptyCount === 1 && markerCount === 2) {
+                winningMoves = winningMoves + 1;
+            }
+        }
+        // check first diagonal
         let emptyCount = 0;
         let markerCount = 0;
 
-        for (let col = 0; col < this.size; col = col + 1) {
-            // ADD CODE HERE THAT COUNTS EMPTY SQUARES AND MARKER SQUARES IN THE ROW
+        if (this.getSquareSymbol(0, 0) === this.emptySquareSymbol) {
+            emptyCount = emptyCount + 1;
+        }
+        else if (this.getSquareSymbol(0, 0) === squareSymbol) {
+            markerCount = markerCount + 1;
         }
 
+        if (this.getSquareSymbol(1, 1) === this.emptySquareSymbol) {
+            emptyCount = emptyCount + 1;
+        }
+        else if (this.getSquareSymbol(1, 1) === squareSymbol) {
+            markerCount = markerCount + 1;
+        }
+
+        if (this.getSquareSymbol(2, 2) === this.emptySquareSymbol) {
+            emptyCount = emptyCount + 1;
+        }
+        else if (this.getSquareSymbol(2, 2) === squareSymbol) {
+            markerCount = markerCount + 1;
+        }
+        if (emptyCount === 1 && markerCount === 2) {
+            winningMoves = winningMoves + 1;
+
+        }
+        // check
+
+        // check second diagonal
+        emptyCount = 0;
+        markerCount = 0;
+
+        if (this.getSquareSymbol(0, 2) === this.emptySquareSymbol) {
+            emptyCount = emptyCount + 1;
+        }
+        else if (this.getSquareSymbol(0, 2) === squareSymbol) {
+            markerCount = markerCount + 1;
+        }
+
+        if (this.getSquareSymbol(1, 1) === this.emptySquareSymbol) {
+            emptyCount = emptyCount + 1;
+        }
+        else if (this.getSquareSymbol(1, 1) === squareSymbol) {
+            markerCount = markerCount + 1;
+        }
+        if (this.getSquareSymbol(2, 0) === this.emptySquareSymbol) {
+            emptyCount = emptyCount + 1;
+        }
+        else if (this.getSquareSymbol(2, 0) === squareSymbol) {
+            markerCount = markerCount + 1;
+        }
         if (emptyCount === 1 && markerCount === 2) {
             winningMoves = winningMoves + 1;
         }
+        return winningMoves;
     }
 
-    // check columns
-    
-    for (let col = 0; col < this.size; col++) {
-        let emptyCount = 0;
-        let markerCount = 0;
-        
-        for (let row = 0; row < this.size; row++) {
-            if (this.dataModel[row, col] === this.emptySquareSymbol) {
-                emptyCount++;
-            }
-            if(this.dataModel[row, col] === squareSymbol) {
-                markerCount++;
-            }
-        }
-        
-        if(emptyCount === 1 && markerCount === 2) {
-            winningMoves = winningMoves + 1;
-        }
-    }
-    // check first diagonal
-    let emptyCount = 0;
-    let markerCount = 0;
-    
-    if (this.getSquareSymbol(0, 0) === this.emptySquareSymbol) {
-        emptyCount = emptyCount + 1;
-    }
-    else if(this.getSquareSymbol(0, 0) === squareSymbol) {
-        markerCount = markerCount + 1;
-    }
-    
-    if (this.getSquareSymbol(1, 1) === this.emptySquareSymbol) {
-        emptyCount = emptyCount + 1;
-    }
-    else if (this.getSquareSymbol(1, 1) === squareSymbol) {
-        markerCount = markerCount + 1;
-    }
-    
-    if (this.getSquareSymbol(2, 2) === this.emptySquareSymbol) {
-        emptyCount = emptyCount + 1;
-    }
-    else if(this.emptySquareSymbol(2, 2) === squareSymbol) {
-        markerCount = markerCount + 1;
-    }
-    if (emptyCount === 1 && markerCount === 2) {
-        winningMoves = winningMoves + 1;
-    }
-    // check second diagonal
-
-    return winningMoves;
-}
     gameIsWon() {
         // Are there three of the same markers diagonally from upper left?
         if (this.dataModel[0][0] === this.dataModel[1][1] &&
